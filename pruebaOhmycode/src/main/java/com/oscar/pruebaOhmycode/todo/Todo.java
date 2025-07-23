@@ -22,6 +22,17 @@ public class Todo {
     @JoinColumn(name="user", nullable = false)
     private User user;
 
+    public Todo(int id, String title, boolean completed, User user) {
+        this.id = id;
+        this.title = title;
+        this.completed = completed;
+        this.user = user;
+    }
+
+    public Todo() {
+
+    }
+
     public int getId() {
         return id;
     }

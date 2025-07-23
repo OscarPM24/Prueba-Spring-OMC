@@ -29,6 +29,19 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Todo> todos;
 
+    public User(int id, String username, String password, String name, Address address, List<Todo> todos) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.address = address;
+        this.todos = todos;
+    }
+
+    public User() {
+
+    }
+
     public int getId() {
         return id;
     }
