@@ -3,7 +3,6 @@ package com.oscar.pruebaOhmycode.todo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +23,9 @@ public class TodoController {
             @RequestParam(name="title", required = false) String title,
             @RequestParam(name="username", required = false) String username,
             @RequestParam(name="page", defaultValue = "0") int page,
-            @RequestParam(name="sort", defaultValue = "id") String sort,
-            @RequestParam(name="dir", defaultValue = "asc") String dir,
             Model model) {
 
-        Sort sortOrder = dir.equalsIgnoreCase("asc") ? Sort.by(sort).ascending() : Sort.by(sort).descending();
-        Pageable pageable = PageRequest.of(page, 10, sortOrder);
+        Pageable pageable = PageRequest.of(page, 10);
         Page<Todo> todos;
 
         if (title != null && !title.isEmpty()) { // Filter by title
@@ -44,9 +40,6 @@ public class TodoController {
         model.addAttribute("page", page);
         model.addAttribute("title", title);
         model.addAttribute("username", username);
-        model.addAttribute("sort", sort);
-        model.addAttribute("dir", dir);
-
         return "list";
     }
 

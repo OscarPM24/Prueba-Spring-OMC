@@ -10,17 +10,17 @@ import java.util.List;
 public class User {
 
     @Id
-    @Column(name="id")
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable=false, length=100)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable=false, length=100)
+    @Column(nullable = false, length = 100)
     private String username;
 
-    @Column(nullable=false, length=100)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Embedded
