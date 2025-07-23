@@ -1,0 +1,67 @@
+body {
+    font-family: Montserrat, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin: 2rem;
+}
+
+.form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.form input {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid gray;
+}
+
+.form button {
+    padding: 0.5rem 1rem;
+    background-color: royalblue;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+th, td {
+    border: 1px solid lightgray;
+    padding: 1rem;
+    text-align: left;
+}
+
+th {
+    background-color: royalblue;
+    color: white;
+    cursor: pointer;
+}
+
+tr:nth-child(even) {
+    background-color: #DDDDDD;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination button {
+    padding: 1rem ;
+    background-color: royalblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
