@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <div>
+        <form th:action="@{/list}" method="get">
+            <label>
+                <input type="text" name="title" placeholder="Filter by Title..." th:value="${title}"/>
+            </label>
+            <label>
+                <input type="text" name="username" placeholder="Filter by Username..." th:value="${username}"/>
+            </label>
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+
+    <div>
+        <table>
+            <tr>
+                <th>
+                    <a th:href="@{/list(sort='title', dir=${dir == 'asc' ? 'desc' : 'asc'}, title=${title}, username=${username})}">
+                        Title <span th:text="${sort == 'title' ? (dir == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/list(sort='user.username', dir=${dir == 'asc' ? 'desc' : 'asc'}, title=${title}, username=${username})}">
+                        Username <span th:text="${sort == 'user.username' ? (dir == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/list(sort='user.address.country', dir=${dir == 'asc' ? 'desc' : 'asc'}, title=${title}, username=${username})}">
+                        Country <span th:text="${sort == 'user.address.country' ? (dir == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/list(sort='completed', dir=${dir == 'asc' ? 'desc' : 'asc'}, title=${title}, username=${username})}">
+                        Completed <span th:text="${sort == 'completed' ? (dir == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+            </tr>
+            <tr th:each="todo : ${todos}">
+                <td th:text="${todo.title}"></td>
+                <td th:text="${todo.user.username}"></td>
+                <td th:text="${todo.user.address.country}"></td>
+                <td th:text="${todo.completed}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <button th:if="${todos.hasPrevious()}"
+                th:attr="data-url=@{'/list'(page=${todos.number - 1}, title=${title}, username=${username}, sort=${sort}, dir=${dir})}"
+                onclick="location.href=this.getAttribute('data-url')">
+            Next Page
+        </button>
+
+        <button th:if="${todos.hasNext()}"
+                th:attr="data-url=@{'/list'(page=${todos.number + 1}, title=${title}, username=${username}, sort=${sort}, dir=${dir})}"
+                onclick="location.href=this.getAttribute('data-url')">
+            Previous Page
+        </button>
+    </div>
+</body>
+</html>
