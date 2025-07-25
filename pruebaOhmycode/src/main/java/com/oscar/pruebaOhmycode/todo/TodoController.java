@@ -2,7 +2,6 @@ package com.oscar.pruebaOhmycode.todo;
 
 import com.oscar.pruebaOhmycode.user.User;
 import com.oscar.pruebaOhmycode.user.UserRepository;
-import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,26 +53,38 @@ public class TodoController {
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("todo", new Todo());
-        model.addAttribute("users", userRepository.findAll()); // Assuming a method to get all users
-        return "create";
+        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("edit", false);
+        return "todo_form";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Todo todo, @RequestParam("user.id") int userId, Model model) {
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
-            todo.setUser(user);
-            if (todo.getTitle() == null || todo.getTitle().isEmpty()) {
-                throw new IllegalArgumentException("Title can't be empty!");
-            }
-            todoRepository.save(todo);
-            return "redirect:/list?page=0&success=true";
-        } catch (Exception e) {
-            model.addAttribute("todo", todo);
-            model.addAttribute("users", userRepository.findAll());
-            model.addAttribute("error", "Error creating Todo: " + e.getMessage());
-            return "create";
-        }
+    public String create(@ModelAttribute Todo todo, @RequestParam("user.id") int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+        todo.setUser(user);
+        todoRepository.save(todo);
+        return "redirect:/list?page=0&success=true";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String updateForm(@PathVariable int id, Model model) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id));
+        User user = todo.getUser();
+        model.addAttribute("todo", todo);
+        model.addAttribute("user", user);
+        model.addAttribute("edit", true);
+        model.addAttribute("users", userRepository.findAll());
+        return "todo_form";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String update(@ModelAttribute Todo todo, @PathVariable int id, @RequestParam("user.id") int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+        Todo newTodo = new Todo(id, todo.getTitle(), todo.isCompleted(), user);
+        todoRepository.save(newTodo);
+        return "redirect:/list?page=0&success=true";
     }
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${edit ? 'Edit Form' : 'Create Form'}"></title>
+    <link rel="stylesheet" th:href="@{/css/create.css}">
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${edit ? 'Edit Todo' : 'Create Todo'}"></h1>
+        <div class="form">
+            <form th:action="${edit ? '/edit/' + todo.id : '/create'}" th:object="${todo}" method="post">
+                <label for="username">
+                    <select th:field="*{user.id}" id="username" required>
+                        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
+                    </select>
+                </label>
+                <label>
+                    <input type="text" th:field="*{title}" name="title" placeholder="Title" required/>
+                </label>
+                <label for="completed">
+                    <select th:field="*{completed}" id="completed" required>
+                        <option value="true">Completed</option>
+                        <option value="false">Not Completed</option>
+                    </select>
+                </label>
+                <button type="submit" th:text="${edit ? 'Edit' : 'Create'}"></button>
+            </form>
+        </div>
+
+        <button th:attr="data-url=@{'/'}"
+                onclick="location.href=this.getAttribute('data-url')">
+            Back to List
+        </button>
+    </div>
+</body>
+<script>
+    if (window.location.pathname === '/create') {
+        document.getElementsByTagName("select")[0].selectedIndex = -1;
+        document.getElementsByTagName("select")[1].selectedIndex = -1;
+    }
+</script>
+</html>

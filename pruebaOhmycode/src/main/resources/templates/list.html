@@ -29,24 +29,22 @@
         <div>
             <table>
                 <tr>
-                    <th>
-                        Title
-                    </th>
-                    <th>
-                        Username
-                    </th>
-                    <th>
-                        Country
-                    </th>
-                    <th>
-                        Completed
-                    </th>
+                    <th>Title</th>
+                    <th>Username</th>
+                    <th>Country</th>
+                    <th>Completed</th>
+                    <th></th>
                 </tr>
                 <tr th:each="todo : ${todos}">
                     <td th:text="${todo.title}"></td>
                     <td th:text="${todo.user.username}"></td>
                     <td th:text="${todo.user.address.country}"></td>
                     <td th:text="${todo.completed}"></td>
+                    <td>
+                        <button th:attr="data-url=@{'/edit/' + ${todo.id}}"
+                                onclick="location.href=this.getAttribute('data-url')">
+                            Edit
+                        </button>
                 </tr>
             </table>
         </div>
