@@ -1,0 +1,38 @@
+body {
+    font-family: Montserrat, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin: 2rem;
+}
+
+.form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.form input {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid gray;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background-color: royalblue;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+select {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid gray;
+    background-color: white;
+    cursor: pointer;
+}

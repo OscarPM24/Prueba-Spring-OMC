@@ -20,13 +20,19 @@ h1 {
     border: 1px solid gray;
 }
 
-.form button {
+button {
     padding: 0.5rem 1rem;
     background-color: royalblue;
     border: none;
     color: white;
     border-radius: 5px;
     cursor: pointer;
+}
+
+button:disabled {
+    background-color: lightgray;
+    cursor: not-allowed;
+    color: white;
 }
 
 table {
@@ -55,13 +61,4 @@ tr:nth-child(even) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.pagination button {
-    padding: 1rem ;
-    background-color: royalblue;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }

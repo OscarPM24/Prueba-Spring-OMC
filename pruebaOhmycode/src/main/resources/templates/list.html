@@ -3,58 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Todo List</title>
+    <link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
 <body>
-    <h1>Todo List</h1>
-    <div>
-        <form th:action="@{/list}" method="get">
-            <label>
-                <input type="text" name="title" placeholder="Filter by Title..." th:value="${title}"/>
-            </label>
-            <label>
-                <input type="text" name="username" placeholder="Filter by Username..." th:value="${username}"/>
-            </label>
-            <button type="submit">Filter</button>
-        </form>
-    </div>
+    <div class="container">
+        <h1>Todo List</h1>
 
-    <div>
-        <table>
-            <tr>
-                <th>
-                    Title
-                </th>
-                <th>
-                    Username
-                </th>
-                <th>
-                    Country
-                </th>
-                <th>
-                    Completed
-                </th>
-            </tr>
-            <tr th:each="todo : ${todos}">
-                <td th:text="${todo.title}"></td>
-                <td th:text="${todo.user.username}"></td>
-                <td th:text="${todo.user.address.country}"></td>
-                <td th:text="${todo.completed}"></td>
-            </tr>
-        </table>
-    </div>
-
-    <div>
-        <button th:if="${todos.hasPrevious()}"
-                th:attr="data-url=@{'/list'(page=${todos.number - 1}, title=${title}, username=${username})}"
+        <button th:attr="data-url=@{'/create'}"
                 onclick="location.href=this.getAttribute('data-url')">
-            Previous Page
+            Create New Todo
         </button>
 
-        <button th:if="${todos.hasNext()}"
-                th:attr="data-url=@{'/list'(page=${todos.number + 1}, title=${title}, username=${username})}"
-                onclick="location.href=this.getAttribute('data-url')">
-            Next Page
-        </button>
+        <div class="form">
+            <form th:action="@{/list}" method="get">
+                <label>
+                    <input type="text" name="title" placeholder="Filter by Title..." th:value="${title}"/>
+                </label>
+                <label>
+                    <input type="text" name="username" placeholder="Filter by Username..." th:value="${username}"/>
+                </label>
+                <button type="submit">Filter</button>
+            </form>
+        </div>
+
+        <div>
+            <table>
+                <tr>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Country
+                    </th>
+                    <th>
+                        Completed
+                    </th>
+                </tr>
+                <tr th:each="todo : ${todos}">
+                    <td th:text="${todo.title}"></td>
+                    <td th:text="${todo.user.username}"></td>
+                    <td th:text="${todo.user.address.country}"></td>
+                    <td th:text="${todo.completed}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button th:attr="data-url=@{'/list'(page=${todos.number - 1}, title=${title}, username=${username})}"
+                    th:disabled="${!todos.hasPrevious()}"
+                    onclick="location.href=this.getAttribute('data-url')">
+                Previous Page
+            </button>
+
+            <button th:attr="data-url=@{'/list'(page=${todos.number + 1}, title=${title}, username=${username})}"
+                    th:disabled="${!todos.hasNext()}"
+                    onclick="location.href=this.getAttribute('data-url')">
+                Next Page
+            </button>
+        </div>
     </div>
 </body>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        alert('Todo created successfully!');
+    }
+</script>
 </html>
