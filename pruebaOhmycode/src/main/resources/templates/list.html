@@ -45,6 +45,10 @@
                                 onclick="location.href=this.getAttribute('data-url')">
                             Edit
                         </button>
+                        <button th:attr="data-url=@{'/delete/' + ${todo.id}}"
+                                onclick="return confirm('Are you sure? This operation cannot be undone.') ? location.href=this.getAttribute('data-url') : false">
+                            Delete
+                        </button>
                 </tr>
             </table>
         </div>
@@ -67,7 +71,7 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-        alert('Todo created successfully!');
+        alert('Task performed successfully!');
     }
 </script>
 </html>

@@ -87,4 +87,12 @@ public class TodoController {
         todoRepository.save(newTodo);
         return "redirect:/list?page=0&success=true";
     }
+
+     @GetMapping("/delete/{id}")
+    public String delete(@PathVariable int id) {
+         Todo todo = todoRepository.findById(id)
+                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id));
+         todoRepository.delete(todo);
+         return "redirect:/list?page=0&success=true";
+    }
 }
