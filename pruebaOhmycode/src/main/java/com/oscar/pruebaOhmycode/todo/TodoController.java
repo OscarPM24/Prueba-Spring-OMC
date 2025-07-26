@@ -5,6 +5,7 @@ import com.oscar.pruebaOhmycode.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class TodoController {
             @RequestParam(name="title", required = false) String title,
             @RequestParam(name="username", required = false) String username,
             @RequestParam(name="page", defaultValue = "0") int page,
+            Authentication authentication,
             Model model) {
 
         Pageable pageable = PageRequest.of(page, 10);
@@ -43,18 +45,22 @@ public class TodoController {
             todos = todoRepository.findAll(pageable);
         }
 
+        String loggedUsername = authentication.getName();
         model.addAttribute("todos", todos);
         model.addAttribute("page", page);
         model.addAttribute("title", title);
         model.addAttribute("username", username);
+        model.addAttribute("loggedUsername", loggedUsername);
         return "list";
     }
 
     @GetMapping("/create")
-    public String createForm(Model model) {
+    public String createForm(Authentication authentication, Model model) {
+        String loggedUsername = authentication.getName();
         model.addAttribute("todo", new Todo());
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("edit", false);
+        model.addAttribute("loggedUsername", loggedUsername);
         return "todo_form";
     }
 
@@ -68,14 +74,14 @@ public class TodoController {
     }
 
     @GetMapping("/edit/{id}")
-    public String updateForm(@PathVariable int id, Model model) {
+    public String updateForm(@PathVariable int id, Authentication authentication, Model model) {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id));
-        User user = todo.getUser();
+        String loggedUsername = authentication.getName();
         model.addAttribute("todo", todo);
-        model.addAttribute("user", user);
         model.addAttribute("edit", true);
         model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("loggedUsername", loggedUsername);
         return "todo_form";
     }
 
