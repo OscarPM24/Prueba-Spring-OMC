@@ -2,6 +2,8 @@ package com.oscar.pruebaOhmycode.todo;
 
 import com.oscar.pruebaOhmycode.user.User;
 import com.oscar.pruebaOhmycode.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping
+@Tag(name = "Todos", description = "Controller for managing todos")
 public class TodoController {
 
     private final TodoService todoService;
@@ -24,11 +27,13 @@ public class TodoController {
     }
 
     @GetMapping("/")
+    @Operation(summary = "Redirect to list page", description = "Redirects to the list page from root URL")
     public String redirectToList() { // Redirects to the list page from root URL
         return "redirect:/list?page=0";
     }
 
     @GetMapping("/list")
+    @Operation(summary = "List todos", description = "Loads the list of todos, depending on the filters applied")
     public String list(
             @RequestParam(name="title", required = false) String title,
             @RequestParam(name="username", required = false) String username,
@@ -64,6 +69,7 @@ public class TodoController {
     }
 
     @GetMapping("/create")
+    @Operation(summary = "Create todo form", description = "Loads the form to create todos")
     public String createForm(Authentication authentication, Model model) { // Loads the form to create todos
         String loggedUsername = authentication.getName(); // Gets the logged username
         User user = userService.findByUsername(loggedUsername)
@@ -75,6 +81,7 @@ public class TodoController {
     }
 
     @PostMapping("/create")
+    @Operation(summary = "Create todo", description = "Handles the creation of the todo")
     public String create(@ModelAttribute Todo todo, @RequestParam("user.id") int userId) { // Handles the creation of the todo
         User user = userService.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId)); // Gets the user that will be assigned to the todo
@@ -84,6 +91,7 @@ public class TodoController {
     }
 
     @GetMapping("/edit/{id}")
+    @Operation(summary = "Edit todo form", description = "Loads the form to edit todos")
     public String updateForm(@PathVariable int id, Authentication authentication, Model model) { // Loads the form to edit todos
         Todo todo = todoService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id)); // Gets the todo that will be edited
@@ -97,6 +105,7 @@ public class TodoController {
     }
 
     @PostMapping("/edit/{id}")
+    @Operation(summary = "Update todo", description = "Handles the update of the todo")
     public String update(@ModelAttribute Todo todo, @PathVariable int id, @RequestParam("user.id") int userId) { // Handles the update of the todo
         User user = userService.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId)); // Gets the user that will be assigned to the todo
@@ -106,6 +115,7 @@ public class TodoController {
     }
 
     @PostMapping("/delete/{id}")
+    @Operation(summary = "Delete todo", description = "Handles the deletion of a todo")
     public String delete(@PathVariable int id) { // Handles the deletion of a todo
          Todo todo = todoService.findById(id)
                  .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id)); // Gets the todo that will be deleted
