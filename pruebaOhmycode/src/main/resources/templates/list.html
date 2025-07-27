@@ -50,11 +50,14 @@
                                 onclick="location.href=this.getAttribute('data-url')">
                             Edit
                         </button>
-                        <button th:attr="data-url=@{'/delete/' + ${todo.id}}"
-                                th:disabled="${todo.user.username != loggedUsername}"
-                                onclick="return confirm('Are you sure? This operation cannot be undone.') ? location.href=this.getAttribute('data-url') : false">
-                            Delete
-                        </button>
+                        <form action="@{'/delete/' + ${todo.id}" method="post">
+                            <button th:attr="data-url=@{'/delete/' + ${todo.id}}"
+                                    th:disabled="${todo.user.username != loggedUsername}"
+                                    onclick="return confirm('Are you sure? This operation cannot be undone.') ? location.href=this.getAttribute('data-url') : false">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             </table>
         </div>

@@ -12,7 +12,7 @@
             <form th:action="${edit ? '/edit/' + todo.id : '/create'}" th:object="${todo}" method="post">
                 <label for="username">
                     <select th:field="*{user.id}" id="username" required>
-                        <option th:each="user : ${users}" th:if="${user.username == loggedUsername}" th:value="${user.id}" th:text="${user.username}"></option>
+                        <option th:value="${user.id}" th:text="${user.username}"></option>
                     </select>
                 </label>
                 <label>
@@ -34,10 +34,4 @@
         </button>
     </div>
 </body>
-<script>
-    if (window.location.pathname === '/create') {
-        document.getElementsByTagName("select")[0].selectedIndex = -1;
-        document.getElementsByTagName("select")[1].selectedIndex = -1;
-    }
-</script>
 </html>

@@ -1,7 +1,7 @@
 package com.oscar.pruebaOhmycode.todo;
 
 import com.oscar.pruebaOhmycode.user.User;
-import com.oscar.pruebaOhmycode.user.UserRepository;
+import com.oscar.pruebaOhmycode.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +14,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping
 public class TodoController {
 
-    private final TodoRepository todoRepository;
-    private final UserRepository userRepository;
-    public TodoController(TodoRepository todoRepository, UserRepository userRepository) {
-        this.todoRepository = todoRepository;
-        this.userRepository = userRepository;
+    private final TodoService todoService;
+    private final UserService userService;
+
+    public TodoController(TodoService todoService, UserService userService) {
+        this.todoService = todoService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
-    public String redirectToList() {
+    public String redirectToList() { // Redirects to the list page from root URL
         return "redirect:/list?page=0";
     }
 
@@ -32,20 +33,20 @@ public class TodoController {
             @RequestParam(name="username", required = false) String username,
             @RequestParam(name="page", defaultValue = "0") int page,
             Authentication authentication,
-            Model model) {
+            Model model) { // Loads the list of todos, depending on the filters applied
 
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 10); // 10 items per page
         Page<Todo> todos;
 
         if (title != null && !title.isEmpty()) { // Filter by title
-            todos = todoRepository.findByTitleContainingIgnoreCase(title, pageable);
+            todos = todoService.findByTitle(title, pageable);
         } else if (username != null && !username.isEmpty()) { // Filter by username
-            todos = todoRepository.findByUser_Username(username, pageable);
-        } else {
-            todos = todoRepository.findAll(pageable);
+            todos = todoService.findByUsername(username, pageable);
+        } else { // No filter
+            todos = todoService.findAll(pageable);
         }
 
-        String loggedUsername = authentication.getName();
+        String loggedUsername = authentication.getName(); // Gets the logged username, to handle the edit/delete buttons on list.html
         model.addAttribute("todos", todos);
         model.addAttribute("page", page);
         model.addAttribute("title", title);
@@ -55,50 +56,52 @@ public class TodoController {
     }
 
     @GetMapping("/create")
-    public String createForm(Authentication authentication, Model model) {
-        String loggedUsername = authentication.getName();
+    public String createForm(Authentication authentication, Model model) { // Loads the form to create todos
+        String loggedUsername = authentication.getName(); // Gets the logged username
+        User user = userService.findByUsername(loggedUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + loggedUsername)); // Gets the user that will be assigned to the todo
         model.addAttribute("todo", new Todo());
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("user", user);
         model.addAttribute("edit", false);
-        model.addAttribute("loggedUsername", loggedUsername);
         return "todo_form";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Todo todo, @RequestParam("user.id") int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+    public String create(@ModelAttribute Todo todo, @RequestParam("user.id") int userId) { // Handles the creation of the todo
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId)); // Gets the user that will be assigned to the todo
         todo.setUser(user);
-        todoRepository.save(todo);
+        todoService.save(todo); // Saves the todo to the database
         return "redirect:/list?page=0&success=true";
     }
 
     @GetMapping("/edit/{id}")
-    public String updateForm(@PathVariable int id, Authentication authentication, Model model) {
-        Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id));
-        String loggedUsername = authentication.getName();
+    public String updateForm(@PathVariable int id, Authentication authentication, Model model) { // Loads the form to edit todos
+        Todo todo = todoService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id)); // Gets the todo that will be edited
+        String loggedUsername = authentication.getName(); // Gets the logged username
+        User user = userService.findByUsername(loggedUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + loggedUsername)); // Gets the user that will be assigned to the todo
         model.addAttribute("todo", todo);
         model.addAttribute("edit", true);
-        model.addAttribute("users", userRepository.findAll());
-        model.addAttribute("loggedUsername", loggedUsername);
+        model.addAttribute("user", user);
         return "todo_form";
     }
 
     @PostMapping("/edit/{id}")
-    public String update(@ModelAttribute Todo todo, @PathVariable int id, @RequestParam("user.id") int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
-        Todo newTodo = new Todo(id, todo.getTitle(), todo.isCompleted(), user);
-        todoRepository.save(newTodo);
+    public String update(@ModelAttribute Todo todo, @PathVariable int id, @RequestParam("user.id") int userId) { // Handles the update of the todo
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId)); // Gets the user that will be assigned to the todo
+        Todo newTodo = new Todo(id, todo.getTitle(), todo.isCompleted(), user); // Creates a new todo with the updated values
+        todoService.save(newTodo); // Saves the updated todo to the database
         return "redirect:/list?page=0&success=true";
     }
 
-     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable int id) {
-         Todo todo = todoRepository.findById(id)
-                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id));
-         todoRepository.delete(todo);
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable int id) { // Handles the deletion of a todo
+         Todo todo = todoService.findById(id)
+                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id)); // Gets the todo that will be deleted
+         todoService.delete(todo); // Deletes the todo from the database
          return "redirect:/list?page=0&success=true";
     }
 }
