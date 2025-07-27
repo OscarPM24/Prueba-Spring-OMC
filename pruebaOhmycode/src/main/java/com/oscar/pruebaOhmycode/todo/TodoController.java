@@ -5,6 +5,7 @@ import com.oscar.pruebaOhmycode.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,10 +33,14 @@ public class TodoController {
             @RequestParam(name="title", required = false) String title,
             @RequestParam(name="username", required = false) String username,
             @RequestParam(name="page", defaultValue = "0") int page,
+            @RequestParam(name="sortField", defaultValue = "id") String sortField,
+            @RequestParam(name="sortDir", defaultValue = "asc") String sortDir,
             Authentication authentication,
             Model model) { // Loads the list of todos, depending on the filters applied
 
-        Pageable pageable = PageRequest.of(page, 10); // 10 items per page
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending() :
+                Sort.by(sortField).descending(); // Sorts the todos by field and direction
+        Pageable pageable = PageRequest.of(page, 10, sort); // 10 items per page
         Page<Todo> todos;
 
         if (title != null && !title.isEmpty()) { // Filter by title
@@ -52,6 +57,9 @@ public class TodoController {
         model.addAttribute("title", title);
         model.addAttribute("username", username);
         model.addAttribute("loggedUsername", loggedUsername);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equalsIgnoreCase("asc") ? "desc" : "asc"); // Reverse sort direction
         return "list";
     }
 

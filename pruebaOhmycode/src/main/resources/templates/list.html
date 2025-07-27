@@ -33,11 +33,28 @@
         <div>
             <table>
                 <tr>
-                    <th>Title</th>
-                    <th>Username</th>
-                    <th>Country</th>
-                    <th>Completed</th>
-                    <th></th>
+                    <th>
+                        <a th:href="@{/list(page=0, sortField='title', sortDir=${sortField == 'title' ? reverseSortDir : 'asc'}, title=${title}, username=${username})}">
+                            Title
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/list(page=0, sortField='user.username', sortDir=${sortField == 'user.username' ? reverseSortDir : 'asc'}, title=${title}, username=${username})}">
+                            Username
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/list(page=0, sortField='user.address.country', sortDir=${sortField == 'user.address.country' ? reverseSortDir : 'asc'}, title=${title}, username=${username})}">
+                            Country
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/list(page=0, sortField='completed', sortDir=${sortField == 'completed' ? reverseSortDir : 'asc'}, title=${title}, username=${username})}">
+                            Completed
+                        </a>
+                    </th>
+                    <th>Actions</th>
+
                 </tr>
                 <tr th:each="todo : ${todos}">
                     <td th:text="${todo.title}"></td>
@@ -50,7 +67,7 @@
                                 onclick="location.href=this.getAttribute('data-url')">
                             Edit
                         </button>
-                        <form action="@{'/delete/' + ${todo.id}" method="post">
+                        <form th:action="@{'/delete/' + ${todo.id}}" method="post">
                             <button th:attr="data-url=@{'/delete/' + ${todo.id}}"
                                     th:disabled="${todo.user.username != loggedUsername}"
                                     onclick="return confirm('Are you sure? This operation cannot be undone.') ? location.href=this.getAttribute('data-url') : false">
