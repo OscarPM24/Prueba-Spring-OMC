@@ -18,6 +18,17 @@ public class Address {
     @Column(nullable=false, length=100)
     private String country;
 
+    public Address(String street, String city, String country, String zipcode) {
+        this.street = street;
+        this.city = city;
+        this.country = country;
+        this.zipcode = zipcode;
+    }
+
+    public Address() {
+
+    }
+
     public String getCity() {
         return city;
     }
