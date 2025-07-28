@@ -74,3 +74,11 @@ Al pulsarlo, saldrá una alerta de confirmación. Si es aceptada, el todo se eli
 Esta API está documentada con Swagger usando Springdoc OpenAPI, una interfaz para poder acceder a todos los métodos de la API y poder interactuar con ellos.
 
 Para acceder a la interfaz se puede desde la siguiente URL: `http://localhost:8080/swagger-ui/index.html`
+
+## 🔍 Tests
+
+Esta API incluye tests unitarios para comprobar los métodos del controlador, usando Mockito.
+
+Para ejecutar los tests, ejecutar el siguiente comando: <br>
+
+`./mvnw test`
