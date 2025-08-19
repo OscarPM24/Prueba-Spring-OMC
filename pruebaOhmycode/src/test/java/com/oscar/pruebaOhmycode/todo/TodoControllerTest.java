@@ -2,6 +2,7 @@ package com.oscar.pruebaOhmycode.todo;
 
 import com.oscar.pruebaOhmycode.user.Address;
 import com.oscar.pruebaOhmycode.user.User;
+import com.oscar.pruebaOhmycode.user.UserDTO;
 import com.oscar.pruebaOhmycode.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ class TodoControllerTest {
     @Test
     @WithMockUser(username = "oscar434", roles = "USER")
     void listTodosEmpty() throws Exception { // Test to load the empty list of todos
-        given(todoService.findAll(any())).willReturn(empty()); // Check that the TodoService returns an empty list
+        given(todoService.findAllDTO(any())).willReturn(empty()); // Check that the TodoService returns an empty list
 
         mockMvc.perform(get("/list")) // Perform a GET request to the list
                 .andExpect(status().isOk()) // Expect a 200 OK status
@@ -58,12 +59,12 @@ class TodoControllerTest {
     @WithMockUser(username = "oscar434", roles = "USER")
     void listTodosWithData() throws Exception { // Test to load the list of todos
         Address mockAddress = new Address("Carrer 123", "Barcelona", "España", "08001"); // Create a mock Address
-        User mockUser = new User(1, "oscar434", "password", "Oscar", mockAddress, Collections.emptyList()); // Create a mock User
-        given(userService.findById(1)).willReturn(Optional.of(mockUser)); // Check that the User exists
-        Todo mockTodo = new Todo(1, "Test Todo", false, mockUser); // Create a mock Todo
-        given(todoService.findById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
+        UserDTO mockUser = new UserDTO(1, "Oscar",  "oscar434", mockAddress, Collections.emptyList()); // Create a mock User
+        given(userService.findDTOById(1)).willReturn(Optional.of(mockUser)); // Check that the User exists
+        TodoDTO mockTodo = new TodoDTO(1, "Test Todo", false, mockUser.getUsername(), mockUser.getAddress().getCountry()); // Create a mock Todo
+        given(todoService.findDTOById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
 
-        given(todoService.findAll(any())).willReturn(new PageImpl<>(List.of(mockTodo))); // Check that the TodoService returns a page with the mock Todo
+        given(todoService.findAllDTO(any())).willReturn(new PageImpl<>(List.of(mockTodo))); // Check that the TodoService returns a page with the mock Todo
 
         mockMvc.perform(get("/list")) // Perform a GET request to the list
                 .andExpect(status().isOk()) // Expect a 200 OK status
@@ -75,8 +76,8 @@ class TodoControllerTest {
     @Test
     @WithMockUser(username = "oscar434", roles = "USER")
     void createForm() throws Exception { // Test to load the create todo form
-        User mockUser = new User(1, "oscar434", "password", "Oscar", null, Collections.emptyList()); // Create a mock User
-        given(userService.findByUsername("oscar434")).willReturn(Optional.of(mockUser)); // Check that the User exists
+        UserDTO mockUser = new UserDTO(1, "Oscar",  "oscar434", null, Collections.emptyList()); // Create a mock User
+        given(userService.findDTOByUsername("oscar434")).willReturn(Optional.of(mockUser)); // Check that the User exists
 
         mockMvc.perform(get("/create")) // Perform a GET request to the create form
                 .andExpect(status().isOk()) // Expect a 200 OK status
@@ -102,10 +103,10 @@ class TodoControllerTest {
     @Test
     @WithMockUser(username = "oscar434", roles = "USER")
     void editForm() throws Exception { // Test to load the edit todo form
-        Todo mockTodo = new Todo(1, "Test Todo", false, null); // Create a mock Todo
-        given(todoService.findById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
-        User mockUser = new User(1, "oscar434", "password", "Oscar", null, Collections.emptyList()); // Create a mock User
-        given(userService.findByUsername("oscar434")).willReturn(Optional.of(mockUser)); // Check that the User exists
+        TodoDTO mockTodo = new TodoDTO(1, "Test Todo", false, null, null); // Create a mock Todo
+        given(todoService.findDTOById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
+        UserDTO mockUser = new UserDTO(1, "Oscar",  "oscar434", null, Collections.emptyList()); // Create a mock User
+        given(userService.findDTOByUsername("oscar434")).willReturn(Optional.of(mockUser)); // Check that the User exists
 
         mockMvc.perform(get("/edit/1")) // Perform a GET request to the edit form
                 .andExpect(status().isOk()) // Expect a 200 OK status

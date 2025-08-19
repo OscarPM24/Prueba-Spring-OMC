@@ -1,6 +1,7 @@
 package com.oscar.pruebaOhmycode.todo;
 
 import com.oscar.pruebaOhmycode.user.User;
+import com.oscar.pruebaOhmycode.user.UserDTO;
 import com.oscar.pruebaOhmycode.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,14 +47,14 @@ public class TodoController {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending() :
                 Sort.by(sortField).descending(); // Sorts the todos by field and direction
         Pageable pageable = PageRequest.of(page, 10, sort); // 10 items per page
-        Page<Todo> todos;
+        Page<TodoDTO> todos;
 
         if (title != null && !title.isEmpty()) { // Filter by title
             todos = todoService.findByTitle(title, pageable);
         } else if (username != null && !username.isEmpty()) { // Filter by username
             todos = todoService.findByUsername(username, pageable);
         } else { // No filter
-            todos = todoService.findAll(pageable);
+            todos = todoService.findAllDTO(pageable);
         }
 
         String loggedUsername = authentication.getName(); // Gets the logged username, to handle the edit/delete buttons on list.html
@@ -72,7 +73,7 @@ public class TodoController {
     @Operation(summary = "Create todo form", description = "Loads the form to create todos")
     public String createForm(Authentication authentication, Model model) { // Loads the form to create todos
         String loggedUsername = authentication.getName(); // Gets the logged username
-        User user = userService.findByUsername(loggedUsername)
+        UserDTO user = userService.findDTOByUsername(loggedUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + loggedUsername)); // Gets the user that will be assigned to the todo
         model.addAttribute("todo", new Todo());
         model.addAttribute("user", user);
@@ -93,10 +94,10 @@ public class TodoController {
     @GetMapping("/edit/{id}")
     @Operation(summary = "Edit todo form", description = "Loads the form to edit todos")
     public String updateForm(@PathVariable int id, Authentication authentication, Model model) { // Loads the form to edit todos
-        Todo todo = todoService.findById(id)
+        TodoDTO todo = todoService.findDTOById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo ID: " + id)); // Gets the todo that will be edited
         String loggedUsername = authentication.getName(); // Gets the logged username
-        User user = userService.findByUsername(loggedUsername)
+        UserDTO user = userService.findDTOByUsername(loggedUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + loggedUsername)); // Gets the user that will be assigned to the todo
         model.addAttribute("todo", todo);
         model.addAttribute("edit", true);

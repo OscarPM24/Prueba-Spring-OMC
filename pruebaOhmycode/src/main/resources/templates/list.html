@@ -58,18 +58,18 @@
                 </tr>
                 <tr th:each="todo : ${todos}">
                     <td th:text="${todo.title}"></td>
-                    <td th:text="${todo.user.username}"></td>
-                    <td th:text="${todo.user.address.country}"></td>
+                    <td th:text="${todo.username}"></td>
+                    <td th:text="${todo.country}"></td>
                     <td th:text="${todo.completed}"></td>
                     <td>
                         <button th:attr="data-url=@{'/edit/' + ${todo.id}}"
-                                th:disabled="${todo.user.username != loggedUsername}"
+                                th:disabled="${todo.username != loggedUsername}"
                                 onclick="location.href=this.getAttribute('data-url')">
                             Edit
                         </button>
                         <form th:action="@{'/delete/' + ${todo.id}}" method="post">
                             <button th:attr="data-url=@{'/delete/' + ${todo.id}}"
-                                    th:disabled="${todo.user.username != loggedUsername}"
+                                    th:disabled="${todo.username != loggedUsername}"
                                     onclick="return confirm('Are you sure? This operation cannot be undone.') ? location.href=this.getAttribute('data-url') : false">
                                 Delete
                             </button>

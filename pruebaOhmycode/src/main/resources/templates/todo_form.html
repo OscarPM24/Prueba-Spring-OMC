@@ -11,9 +11,8 @@
         <div class="form">
             <form th:action="${edit ? '/edit/' + todo.id : '/create'}" th:object="${todo}" method="post">
                 <label for="username">
-                    <select th:field="*{user.id}" id="username" required>
-                        <option th:value="${user.id}" th:text="${user.username}"></option>
-                    </select>
+                    <input type="hidden" name="user.id" th:value="${user.id}" />
+                    <input type="text" th:value="${user.username}" readonly />
                 </label>
                 <label>
                     <input type="text" th:field="*{title}" name="title" placeholder="Title" required/>
