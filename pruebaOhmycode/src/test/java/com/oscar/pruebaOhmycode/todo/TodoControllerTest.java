@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.data.domain.Page.empty;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -103,11 +104,14 @@ class TodoControllerTest {
     @Test
     @WithMockUser(username = "oscar434", roles = "USER")
     void editForm() throws Exception { // Test to load the edit todo form
-        TodoDTO mockTodo = new TodoDTO(1, "Test Todo", false, null, null); // Create a mock Todo
+        TodoDTO mockTodo = new TodoDTO(1, "Test Todo", false, "oscar434", null); // Create a mock Todo
         given(todoService.findDTOById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
+
         UserDTO mockUser = new UserDTO(1, "Oscar",  "oscar434", null, Collections.emptyList()); // Create a mock User
         given(userService.findDTOByUsername("oscar434")).willReturn(Optional.of(mockUser)); // Check that the User exists
 
+        given(todoService.checkLoggedUser(mockTodo, mockUser.getUsername())).willReturn(true); // Check that the logged user is the owner of the todo
+        
         mockMvc.perform(get("/edit/1")) // Perform a GET request to the edit form
                 .andExpect(status().isOk()) // Expect a 200 OK status
                 .andExpect(view().name("todo_form")) // Expect the view to be "todo_form"
@@ -120,6 +124,10 @@ class TodoControllerTest {
     void updateTodo() throws Exception { // Test to update an existing todo
         User mockUser = new User(1, "oscar434", "password", "Oscar", null, Collections.emptyList()); // Create a mock User
         given(userService.findById(1)).willReturn(Optional.of(mockUser)); // Check that the User exists
+        TodoDTO mockTodoDTO = new TodoDTO(1, "Test Todo", false, "oscar434", null); // Create a mock TodoDTO
+        given(todoService.findDTOById(1)).willReturn(Optional.of(mockTodoDTO)); // Check that the TodoDTO exists
+        given(todoService.checkLoggedUser(any(TodoDTO.class), eq("oscar434"))).willReturn(true); // Check that the logged user is the owner of the todo
+
 
         mockMvc.perform(post("/edit/1") // Perform a POST request to update the Todo
                 .param("title", "Todo Editado") // Set the title of the Todo
@@ -133,6 +141,10 @@ class TodoControllerTest {
     void deleteTodo() throws Exception { // Test to delete a todo
         Todo mockTodo = new Todo(1, "Test Todo", false, null); // Create a mock Todo
         given(todoService.findById(1)).willReturn(Optional.of(mockTodo)); // Check that the Todo exists
+        TodoDTO mockTodoDTO = new TodoDTO(1, "Test Todo", false, "oscar434", null); // Create a mock TodoDTO
+        given(todoService.findDTOById(1)).willReturn(Optional.of(mockTodoDTO)); // Check that the TodoDTO exists
+
+        given(todoService.checkLoggedUser(any(TodoDTO.class), eq("oscar434"))).willReturn(true); // Check that the logged user is the owner of the todo
 
         mockMvc.perform(post("/delete/1").with(csrf())) // Perform a POST request to delete the Todo, with CSRF token
                 .andExpect(status().is3xxRedirection()) // Expect a 3xx redirection
